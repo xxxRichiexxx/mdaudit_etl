@@ -11,7 +11,7 @@ from airflow.operators.dummy import DummyOperator
 from airflow.utils.dates import days_ago
 from airflow.contrib.operators.vertica_operator import VerticaOperator
 
-from mdaudit_etl_v3.scripts.collable import etl_proc
+from mdaudit_etl.scripts.collable import etl_proc
 
 
 #-------------- DAG -----------------
