@@ -26,7 +26,7 @@ with DAG(
         'MD_Audit_v3',
         default_args=default_args,
         description='Получение данных из MD Audit.',
-        start_date=dt.datetime(2023, 8, 1),
+        start_date=dt.datetime(2023, 6, 1),
         schedule_interval='@monthly',
         catchup=True,
         max_active_runs=1
@@ -42,9 +42,6 @@ with DAG(
             op_kwargs={
                 'source_type': 'rest_api',
                 'data_type': 'mdaudit_questions',
-                'start_date': '2023-09-01',
-                'end_date': '2023-10-01',
-                'end_date_EXCLUSIVE': True,
             }
         )
 
