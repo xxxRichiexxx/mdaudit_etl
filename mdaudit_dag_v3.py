@@ -11,7 +11,7 @@ from airflow.operators.dummy import DummyOperator
 from airflow.utils.dates import days_ago
 from airflow.contrib.operators.vertica_operator import VerticaOperator
 
-from mdaudit_etl.scripts.collable import etl_proc
+from mdaudit_etl.scripts.collable import etl_questions, etl_shops
 
 
 #-------------- DAG -----------------
@@ -43,13 +43,24 @@ with DAG(
             tasks.append(
                 PythonOperator(
                     task_id=f'get_checks_and_answers_month_offset_{offset}',
-                    python_callable=etl_proc.etl_start,
+                    python_callable=etl_questions.etl_start,
                     op_kwargs={
                         'data_type': 'mdaudit_questions',
                         'month_offset': offset,
                     }
                 )
             )
+
+        tasks.append(
+            PythonOperator(
+                task_id=f'get_shops',
+                python_callable=etl_shops.etl_start,
+                op_kwargs={
+                    'data_type': 'mdaudit_shops',
+                }
+            )
+        )
+        
 
     with TaskGroup('Формирование_слоя_DDS') as data_to_dds:
 

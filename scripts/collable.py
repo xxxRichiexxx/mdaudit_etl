@@ -15,7 +15,7 @@ api_con = BaseHook.get_connection('mdaudit')
 
 dwh_con = BaseHook.get_connection('greenplum')
 
-etl_proc = ETL(
+etl_questions = ETL(
     dwh_host=dwh_con.host,
     dwh_port=dwh_con.port,
     dwh_database=dwh_con.schema,
@@ -27,5 +27,19 @@ etl_proc = ETL(
     rest_api_endpoint=f'{api_con.host}/connector/rpc/stt_checklists',
     rest_api_method='get',
     rest_api_params_str='?last_modified_at=gte.{start_date}&last_modified_at=lt.{end_date}',
+    rest_api_headers=json.loads(api_con.extra),
+)
+
+etl_shops = ETL(
+    dwh_host=dwh_con.host,
+    dwh_port=dwh_con.port,
+    dwh_database=dwh_con.schema,
+    dwh_user=dwh_con.login,
+    dwh_password=dwh_con.password,
+    dwh_scheme='stage',
+
+    source_type='rest_api',
+    rest_api_endpoint=f'{api_con.host}/orgstruct/shops',
+    rest_api_method='get',
     rest_api_headers=json.loads(api_con.extra),
 )
