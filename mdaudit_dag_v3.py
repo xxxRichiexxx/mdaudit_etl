@@ -26,7 +26,7 @@ with DAG(
         'MD_Audit_v3',
         default_args=default_args,
         description='Получение данных из MD Audit.',
-        start_date=dt.datetime(2023, 6, 1),
+        start_date=dt.datetime(2023, 8, 1),
         schedule_interval='@monthly',
         catchup=True,
         max_active_runs=1
@@ -46,7 +46,7 @@ with DAG(
                     python_callable=etl_proc.etl_start,
                     op_kwargs={
                         'data_type': 'mdaudit_questions',
-                        'offset': offset,
+                        'month_offset': offset,
                     }
                 )
             )
