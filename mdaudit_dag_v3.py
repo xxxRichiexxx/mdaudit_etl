@@ -36,15 +36,20 @@ with DAG(
 
     with TaskGroup('Загрузка_данных_в_stage_слой') as data_to_stage:
 
-        get_checks_and_answers = PythonOperator(
-            task_id='get_checks_and_answers',
-            python_callable=etl_proc.etl_start,
-            op_kwargs={
-                'source_type': 'rest_api',
-                'data_type': 'mdaudit_questions',
-            }
-        )
+        tasks = []
 
+        for offset in range(3):
+
+            tasks.append(
+                PythonOperator(
+                    task_id=f'get_checks_and_answers_month_offset_{offset}',
+                    python_callable=etl_proc.etl_start,
+                    op_kwargs={
+                        'data_type': 'mdaudit_questions',
+                        'offset': offset,
+                    }
+                )
+            )
 
     with TaskGroup('Формирование_слоя_DDS') as data_to_dds:
 

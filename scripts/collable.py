@@ -22,6 +22,8 @@ etl_proc = ETL(
     dwh_user=dwh_con.login,
     dwh_password=dwh_con.password,
     dwh_scheme='stage',
+
+    source_type='rest_api',
     rest_api_endpoint=f'{api_con.host}/connector/rpc/stt_checklists',
     rest_api_method='get',
     rest_api_params_str='?last_modified_at=gte.{start_date}&last_modified_at=lt.{end_date}',
