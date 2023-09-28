@@ -57,6 +57,7 @@ with DAG(
                 python_callable=etl_shops.etl_start,
                 op_kwargs={
                     'data_type': 'mdaudit_shops',
+                    'periodic_data': False,
                 }
             )
         )
