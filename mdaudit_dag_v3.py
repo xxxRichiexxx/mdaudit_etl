@@ -65,7 +65,43 @@ with DAG(
 
     with TaskGroup('Формирование_слоя_DDS') as data_to_dds:
 
-        pass
+        dds_regions = VerticaOperator(
+            task_id='quality_of_service_regions',
+            vertica_conn_id='vertica',
+            sql='scripts/dds_regions.sql',
+        )
+
+        tables = (
+            'shops',
+            'divisions',
+            'templates',
+            'resolvers',
+        )
+
+        parallel_tasks = []
+
+        for table in tables:
+            parallel_tasks.append(
+                VerticaOperator(
+                    task_id=f'quality_of_service_{table}',
+                    vertica_conn_id='vertica',
+                    sql=f'scripts/dds_{table}.sql',
+                )
+            )
+
+        dds_checks = VerticaOperator(
+            task_id=f'quality_of_service_checks',
+            vertica_conn_id='vertica',
+            sql='scripts/dds_checks.sql',
+        )
+
+        dds_answers = VerticaOperator(
+            task_id='quality_of_service_answers',
+            vertica_conn_id='vertica',
+            sql='scripts/dds_answers.sql',
+        )
+
+        dds_regions >> parallel_tasks >> dds_checks >> dds_answers
 
     with TaskGroup('Формирование_слоя_dm') as data_to_dm:
 

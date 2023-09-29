@@ -24,80 +24,81 @@ DISTRIBUTED RANDOMLY;
 -- DDS --
 DROP TABLE IF EXISTS dds.quality_of_service_regions;
 CREATE TABLE IF NOT EXISTS dds.quality_of_service_regions(
-    id SERIAL PRIMARY KEY
-    ,region_id BIGINT NOT NULL UNIQUE
+    id INT PRIMARY KEY
     ,region_name VARCHAR(500) NOT NULL
 )
 DISTRIBUTED REPLICATED;
 
 DROP TABLE IF EXISTS dds.quality_of_service_shops;
 CREATE TABLE IF NOT EXISTS dds.quality_of_service_shops(
-    id SERIAL PRIMARY KEY,
-    shop_id BIGINT NOT NULL UNIQUE,
-    active BOOLEAN,
-    sap VARCHAR(100),
-    locality VARCHAR(1000),
-    address VARCHAR(1000),
-    city VARCHAR(255),
-    latitude Numeric(20,10),
-    longitude Numeric(20,10),
-    region_id BIGINT REFERENCES sttgaz.dds_mdaudit_regions(id)
+    id INT PRIMARY KEY
+    ,active BOOLEAN
+    ,sap VARCHAR(100)
+    ,locality VARCHAR(1000)
+    ,address VARCHAR(1000)
+    ,city VARCHAR(255)
+    ,latitude Numeric(20,10)
+    ,longitude Numeric(20,10)
+    ,region_id INT references dds.quality_of_service_regions(id)
+)
+DISTRIBUTED REPLICATED;
+
+DROP TABLE IF EXISTS dds.quality_of_service_divisions;
+CREATE TABLE IF NOT EXISTS dds.quality_of_service_divisions(
+    id INT PRIMARY KEY
+    ,division_name VARCHAR(1000) NOT NULL
 )
 DISTRIBUTED REPLICATED;
 
 
+DROP TABLE IF EXISTS dds.quality_of_service_templates;
+CREATE TABLE IF NOT EXISTS dds.quality_of_service_templates(
+    id INT PRIMARY KEY,
+    template_name VARCHAR(1000) NOT NULL
+)
+DISTRIBUTED REPLICATED;
 
 
-CREATE TABLE IF NOT EXISTS sttgaz.dds_mdaudit_divisions(
-    id AUTO_INCREMENT PRIMARY KEY,
-    division_id BIGINT NOT NULL UNIQUE,
-    division_name VARCHAR(2000) NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS sttgaz.dds_mdaudit_templates(
-    id AUTO_INCREMENT PRIMARY KEY,
-    template_id BIGINT NOT NULL UNIQUE,
-    template_name VARCHAR(2000) NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS sttgaz.dds_mdaudit_resolvers(
-    id AUTO_INCREMENT PRIMARY KEY,
-    resolver_id BIGINT NOT NULL UNIQUE,
-    resolver_first_name VARCHAR,
-    resolver_last_name VARCHAR
-);
+DROP TABLE IF EXISTS dds.quality_of_service_resolvers;
+CREATE TABLE IF NOT EXISTS dds.quality_of_service_resolvers(
+    id INT PRIMARY KEY
+    ,resolver_first_name VARCHAR
+    ,resolver_last_name VARCHAR
+)
+DISTRIBUTED REPLICATED;
 
 
-
-CREATE TABLE IF NOT EXISTS sttgaz.dds_mdaudit_checks(
-    id AUTO_INCREMENT PRIMARY KEY,
-    check_id BIGINT NOT NULL UNIQUE,
-    template_id BIGINT NOT NULL REFERENCES sttgaz.dds_mdaudit_templates(id),
-    shop_id BIGINT NOT NULL REFERENCES sttgaz.dds_mdaudit_shops(id),
-    division_id INT NOT NULL REFERENCES sttgaz.dds_mdaudit_divisions(id),
-    resolver_id BIGINT NOT NULL REFERENCES sttgaz.dds_mdaudit_resolvers(id),
-    resolve_date DATE,
-    start_time TIMESTAMP,
-    finish_time TIMESTAMP,
-    last_modified_at TIMESTAMP NOT NULL,
-    grade NUMERIC(6,3),
-    comment VARCHAR(8000),
-    status VARCHAR NOT NULL,
-
-    CONSTRAINT stage_mdaudit_checks_unique UNIQUE(id, shop_id) 
-);
+DROP TABLE IF EXISTS dds.quality_of_service_checks;
+CREATE TABLE IF NOT EXISTS dds.quality_of_service_checks(
+    id INT PRIMARY KEY
+    ,template_id INT NOT NULL REFERENCES dds.quality_of_service_templates(id)
+    ,shop_id INT NOT NULL REFERENCES dds.quality_of_service_shops(id)
+    ,division_id INT NOT NULL REFERENCES dds.quality_of_service_divisions(id)
+    ,resolver_id INT NOT NULL REFERENCES dds.quality_of_service_resolvers(id)
+    ,resolve_date DATE
+    ,start_time TIMESTAMP
+    ,finish_time TIMESTAMP
+    ,last_modified_at TIMESTAMP NOT NULL
+    ,grade NUMERIC(6,3)
+    ,comment VARCHAR(3000)
+    ,status VARCHAR NOT NULL
+)
+DISTRIBUTED BY (id);
 
 
-CREATE TABLE IF NOT EXISTS sttgaz.dds_mdaudit_answers(
-    id AUTO_INCREMENT PRIMARY KEY,
-    answer_id BIGINT NOT NULL UNIQUE,
-    check_id BIGINT NOT NULL REFERENCES sttgaz.dds_mdaudit_checks(id),
-    question_id BIGINT NOT NULL,
-    name VARCHAR(3000) NOT NULL,
-    answer NUMERIC(6,3) NOT NULL,
-    weight INT NOT NULL,
-    comment VARCHAR(8000)
-);
+DROP TABLE IF EXISTS dds.quality_of_service_answers;
+CREATE TABLE IF NOT EXISTS dds.quality_of_service_answers(
+    id INT
+    ,check_id INT NOT NULL REFERENCES dds.quality_of_service_checks(id) ON DELETE CASCADE
+    ,question_id INT NOT NULL
+    ,name VARCHAR(1000) NOT NULL
+    ,answer NUMERIC(6,3) NOT NULL
+    ,weight INT NOT NULL
+    ,comment VARCHAR(3000)
+    
+    ,constraint quality_of_service_answers_uniq UNIQUE(id, check_id)
+)
+DISTRIBUTED BY (check_id);
 
 
 
