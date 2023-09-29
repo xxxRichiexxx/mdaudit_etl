@@ -8,7 +8,7 @@ WHERE id IN
 			 FROM stage.mdaudit_questions)
 	SELECT
 		replace(json_array_elements(data -> 'answers') ->> 'id', '"', '')::int 					AS id
-	FROM data)
+	FROM data);
 
 INSERT INTO dds.quality_of_service_answers
 	WITH 
