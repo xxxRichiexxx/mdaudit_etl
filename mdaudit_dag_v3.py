@@ -6,10 +6,8 @@ import datetime as dt
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from airflow.utils.task_group import TaskGroup
-from airflow.hooks.base import BaseHook
 from airflow.operators.dummy import DummyOperator
-from airflow.utils.dates import days_ago
-from airflow.contrib.operators.vertica_operator import VerticaOperator
+from airflow.providers.postgres.operators.postgres import PostgresOperator
 
 from mdaudit_etl.scripts.collable import etl_questions, etl_shops
 
@@ -65,9 +63,9 @@ with DAG(
 
     with TaskGroup('Формирование_слоя_DDS') as data_to_dds:
 
-        dds_regions = VerticaOperator(
+        dds_regions = PostgresOperator(
             task_id='quality_of_service_regions',
-            vertica_conn_id='vertica',
+            postgres_conn_id='vertica',
             sql='scripts/dds_regions.sql',
         )
 
@@ -82,22 +80,22 @@ with DAG(
 
         for table in tables:
             parallel_tasks.append(
-                VerticaOperator(
+                PostgresOperator(
                     task_id=f'quality_of_service_{table}',
-                    vertica_conn_id='vertica',
+                    postgres_conn_id='vertica',
                     sql=f'scripts/dds_{table}.sql',
                 )
             )
 
-        dds_checks = VerticaOperator(
+        dds_checks = PostgresOperator(
             task_id=f'quality_of_service_checks',
-            vertica_conn_id='vertica',
+            postgres_conn_id='vertica',
             sql='scripts/dds_checks.sql',
         )
 
-        dds_answers = VerticaOperator(
+        dds_answers = PostgresOperator(
             task_id='quality_of_service_answers',
-            vertica_conn_id='vertica',
+            postgres_conn_id='vertica',
             sql='scripts/dds_answers.sql',
         )
 

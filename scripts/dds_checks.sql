@@ -23,7 +23,7 @@ INSERT INTO dds.quality_of_service_answers
 		,replace(json_array_elements(data -> 'answers') ->> 'answer', '"', '')::VARCHAR(300) 	AS answer
 		,replace(json_array_elements(data -> 'answers') ->> 'weight', '"', '')::int 			AS weight
 		,replace(json_array_elements(data -> 'answers') ->> 'comment', '"', '')::VARCHAR(1000)  AS comment
-	FROM data
+	FROM data;
 
 COMMIT TRANSACTION;
 
