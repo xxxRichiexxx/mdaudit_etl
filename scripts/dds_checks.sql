@@ -5,7 +5,8 @@ WHERE id IN
 	(WITH 
 		data AS
 			(SELECT json_array_elements(data) 													AS data
-			 FROM stage.mdaudit_questions)
+			 FROM stage.mdaudit_questions
+			 WHERE period = '{execution_date.replace(day=1)}')
 	SELECT
 		replace(json_array_elements(data -> 'answers') ->> 'id', '"', '')::int 					AS id
 	FROM data);
@@ -14,7 +15,8 @@ INSERT INTO dds.quality_of_service_answers
 	WITH 
 		data AS
 			(SELECT json_array_elements(data) 													AS data
-			 FROM stage.mdaudit_questions)
+			 FROM stage.mdaudit_questions
+			 WHERE period = '{execution_date.replace(day=1)}')
 	SELECT
 		replace(json_array_elements(data -> 'answers') ->> 'id', '"', '')::int 					AS id
 		,replace((data ->> 'id'), '"', '')::int  												AS check_id
