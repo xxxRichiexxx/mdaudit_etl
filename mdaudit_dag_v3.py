@@ -86,7 +86,7 @@ with DAG(
 
         dds_checks = PostgresOperator(
             task_id=f'quality_of_service_checks',
-            postgres_conn_id='greenplum'
+            postgres_conn_id='greenplum',
             sql='scripts/dds_checks.sql',
         )
 
