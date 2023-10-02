@@ -8,7 +8,7 @@ WHERE id IN
 			 FROM stage.mdaudit_questions
 			 WHERE period = '{{execution_date.replace(day=1)}}')
 	SELECT DISTINCT
-		replace(data ->>'id'), '"', '')::int 							AS id
+		replace(data ->>'id', '"', '')::int 							AS id
 	FROM data);
 
 INSERT INTO dds.quality_of_service_checks
