@@ -1,6 +1,5 @@
 BEGIN TRANSACTION;
 
-
 DELETE FROM dds.quality_of_service_answers
 WHERE id IN 
 	(WITH 
@@ -8,7 +7,7 @@ WHERE id IN
 			(SELECT json_array_elements(data) 													AS data
 			 FROM stage.mdaudit_questions
 			 WHERE period = '{{execution_date.replace(day=1)}}')
-	SELECT
+	SELECT DISTINCT
 		replace(json_array_elements(data -> 'answers') ->> 'id', '"', '')::INT 					AS id
 	FROM data);
 
