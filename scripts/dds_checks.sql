@@ -22,7 +22,7 @@ INSERT INTO dds.quality_of_service_answers
 		,replace((data ->> 'id'), '"', '')::int  												AS check_id
 		,replace(json_array_elements(data -> 'answers') ->> 'question_id', '"', '')::int 		AS question_id
 		,replace(json_array_elements(data -> 'answers') ->> 'name', '"', '')::VARCHAR(300) 		AS name
-		,replace(json_array_elements(data -> 'answers') ->> 'answer', '"', '')::VARCHAR(300) 	AS answer
+		,replace(json_array_elements(data -> 'answers') ->> 'answer', '"', '')::NUMERIC(6,3)	AS answer
 		,replace(json_array_elements(data -> 'answers') ->> 'weight', '"', '')::int 			AS weight
 		,replace(json_array_elements(data -> 'answers') ->> 'comment', '"', '')::VARCHAR(1000)  AS comment
 	FROM data;
