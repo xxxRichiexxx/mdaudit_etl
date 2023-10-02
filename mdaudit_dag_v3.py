@@ -1,6 +1,3 @@
-import sqlalchemy as sa
-from urllib.parse import quote
-import json
 import datetime as dt
 
 from airflow import DAG
@@ -24,7 +21,7 @@ with DAG(
         'MD_Audit_v3',
         default_args=default_args,
         description='Получение данных из MD Audit.',
-        start_date=dt.datetime(2023, 8, 1),
+        start_date=dt.datetime(2023, 7, 1),
         schedule_interval='@monthly',
         catchup=True,
         max_active_runs=1

@@ -22,16 +22,25 @@ DISTRIBUTED RANDOMLY;
 
 
 -- DDS --
+DROP TABLE IF EXISTS dds.quality_of_service_answers;
+DROP TABLE IF EXISTS dds.quality_of_service_checks;
+DROP TABLE IF EXISTS dds.quality_of_service_shops;
 DROP TABLE IF EXISTS dds.quality_of_service_regions;
+DROP TABLE IF EXISTS dds.quality_of_service_resolvers;
+DROP TABLE IF EXISTS dds.quality_of_service_templates;
+DROP TABLE IF EXISTS dds.quality_of_service_divisions;
+
+
+
 CREATE TABLE IF NOT EXISTS dds.quality_of_service_regions(
-    id INT PRIMARY KEY
+    id INT UNIQUE
     ,region_name VARCHAR(500) NOT NULL
 )
 DISTRIBUTED REPLICATED;
 
-DROP TABLE IF EXISTS dds.quality_of_service_shops;
+
 CREATE TABLE IF NOT EXISTS dds.quality_of_service_shops(
-    id INT PRIMARY KEY
+    id INT UNIQUE
     ,active BOOLEAN
     ,sap VARCHAR(100)
     ,locality VARCHAR(1000)
@@ -43,34 +52,31 @@ CREATE TABLE IF NOT EXISTS dds.quality_of_service_shops(
 )
 DISTRIBUTED REPLICATED;
 
-DROP TABLE IF EXISTS dds.quality_of_service_divisions;
+
 CREATE TABLE IF NOT EXISTS dds.quality_of_service_divisions(
-    id INT PRIMARY KEY
+    id INT UNIQUE
     ,division_name VARCHAR(1000) NOT NULL
 )
 DISTRIBUTED REPLICATED;
 
 
-DROP TABLE IF EXISTS dds.quality_of_service_templates;
 CREATE TABLE IF NOT EXISTS dds.quality_of_service_templates(
-    id INT PRIMARY KEY,
-    template_name VARCHAR(1000) NOT NULL
+    id INT UNIQUE
+    ,template_name VARCHAR(1000) NOT NULL
 )
 DISTRIBUTED REPLICATED;
 
 
-DROP TABLE IF EXISTS dds.quality_of_service_resolvers;
 CREATE TABLE IF NOT EXISTS dds.quality_of_service_resolvers(
-    id INT PRIMARY KEY
+    id INT UNIQUE
     ,resolver_first_name VARCHAR
     ,resolver_last_name VARCHAR
 )
 DISTRIBUTED REPLICATED;
 
 
-DROP TABLE IF EXISTS dds.quality_of_service_checks;
 CREATE TABLE IF NOT EXISTS dds.quality_of_service_checks(
-    id INT PRIMARY KEY
+    id INT UNIQUE
     ,template_id INT NOT NULL REFERENCES dds.quality_of_service_templates(id)
     ,shop_id INT NOT NULL REFERENCES dds.quality_of_service_shops(id)
     ,division_id INT NOT NULL REFERENCES dds.quality_of_service_divisions(id)
@@ -86,7 +92,7 @@ CREATE TABLE IF NOT EXISTS dds.quality_of_service_checks(
 DISTRIBUTED BY (id);
 
 
-DROP TABLE IF EXISTS dds.quality_of_service_answers;
+
 CREATE TABLE IF NOT EXISTS dds.quality_of_service_answers(
     id INT
     ,check_id INT NOT NULL REFERENCES dds.quality_of_service_checks(id) ON DELETE CASCADE
@@ -99,6 +105,3 @@ CREATE TABLE IF NOT EXISTS dds.quality_of_service_answers(
     ,constraint quality_of_service_answers_uniq UNIQUE(id, check_id)
 )
 DISTRIBUTED BY (check_id);
-
-
-

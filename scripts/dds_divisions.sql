@@ -6,7 +6,7 @@ WHERE id IN
         SELECT DISTINCT
 	    replace((json_array_elements(data) ->> 'division_id'), '"', '')::int
         FROM stage.mdaudit_questions
-		WHERE period = '{execution_date.replace(day=1)}'
+		WHERE period = '{{execution_date.replace(day=1)}}'
     );
 
 
@@ -15,7 +15,7 @@ INSERT INTO dds.quality_of_service_divisions
 WITH data AS(
 	SELECT json_array_elements(data) as data
 	FROM stage.mdaudit_questions
-	WHERE period = '{execution_date.replace(day=1)}'
+	WHERE period = '{{execution_date.replace(day=1)}}'
 )         
 SELECT DISTINCT
 	replace((data ->> 'division_id'), '"', '')::int						as id
