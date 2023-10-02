@@ -1,4 +1,4 @@
--- BEGIN TRANSACTION;
+BEGIN TRANSACTION;
 
 DELETE FROM dds.quality_of_service_shops
 WHERE id IN 
@@ -30,4 +30,4 @@ SELECT DISTINCT
     ,replace((data ->> 'regionId'), '"', '')::int               AS region_id
 FROM data AS d;
 
--- COMMIT TRANSACTION;
+COMMIT TRANSACTION;

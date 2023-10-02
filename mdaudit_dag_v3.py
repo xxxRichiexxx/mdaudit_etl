@@ -62,7 +62,7 @@ with DAG(
 
         dds_regions = PostgresOperator(
             task_id='quality_of_service_regions',
-            postgres_conn_id='vertica',
+            postgres_conn_id='greenplum',
             sql='scripts/dds_regions.sql',
         )
 
@@ -79,20 +79,20 @@ with DAG(
             parallel_tasks.append(
                 PostgresOperator(
                     task_id=f'quality_of_service_{table}',
-                    postgres_conn_id='vertica',
+                    postgres_conn_id='greenplum',
                     sql=f'scripts/dds_{table}.sql',
                 )
             )
 
         dds_checks = PostgresOperator(
             task_id=f'quality_of_service_checks',
-            postgres_conn_id='vertica',
+            postgres_conn_id='greenplum'
             sql='scripts/dds_checks.sql',
         )
 
         dds_answers = PostgresOperator(
             task_id='quality_of_service_answers',
-            postgres_conn_id='vertica',
+            postgres_conn_id='greenplum',
             sql='scripts/dds_answers.sql',
         )
 
