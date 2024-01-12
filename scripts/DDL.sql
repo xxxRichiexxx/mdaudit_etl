@@ -85,7 +85,6 @@ CREATE TABLE IF NOT EXISTS dds.quality_of_service_checks(
     ,grade NUMERIC(6,3)
     ,comment VARCHAR(3000)
     ,status VARCHAR NOT NULL
-    ,period DATE
 )
 DISTRIBUTED BY (id);
 

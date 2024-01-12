@@ -91,12 +91,18 @@ with DAG(
             task_id=f'quality_of_service_checks',
             postgres_conn_id='greenplum',
             sql='scripts/dds_checks.sql',
+            params={
+                'delta': dt.timedelta(days=90),
+            }
         )
 
         dds_answers = PostgresOperator(
             task_id='quality_of_service_answers',
             postgres_conn_id='greenplum',
             sql='scripts/dds_answers.sql',
+            params={
+                'delta': dt.timedelta(days=90),
+            }
         )
 
         dds_regions >> parallel_tasks >> dds_checks >> dds_answers
