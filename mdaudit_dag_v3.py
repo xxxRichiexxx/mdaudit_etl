@@ -81,6 +81,9 @@ with DAG(
                     task_id=f'quality_of_service_{table}',
                     postgres_conn_id='greenplum',
                     sql=f'scripts/dds_{table}.sql',
+                    params={
+                        'delta': dt.timedelta(days=90),
+                    }
                 )
             )
 
