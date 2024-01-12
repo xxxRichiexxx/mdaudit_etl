@@ -1,4 +1,6 @@
 import datetime as dt
+import os
+import sys
 
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
@@ -6,7 +8,11 @@ from airflow.utils.task_group import TaskGroup
 from airflow.operators.dummy import DummyOperator
 from airflow.providers.postgres.operators.postgres import PostgresOperator
 
-from mdaudit_etl.scripts.collable import etl_questions, etl_shops
+DAG_DIR = os.path.dirname(os.path.abspath(__file__))
+LIB_DIR = os.path.join(os.path.dirname(DAG_DIR), 'lib')
+sys.path.append(LIB_DIR)
+
+from CustomOperators import MDAuditOperator
 
 
 #-------------- DAG -----------------
@@ -21,7 +27,7 @@ with DAG(
         'MD_Audit_v3',
         default_args=default_args,
         description='Получение данных из MD Audit.',
-        start_date=dt.datetime(2023, 7, 1),
+        start_date=dt.datetime(2023, 9, 1),
         schedule_interval='@monthly',
         catchup=True,
         max_active_runs=1
@@ -31,33 +37,22 @@ with DAG(
 
     with TaskGroup('Загрузка_данных_в_stage_слой') as data_to_stage:
 
-        tasks = []
-
-        for offset in range(3):
-
-            tasks.append(
-                PythonOperator(
-                    task_id=f'get_checks_and_answers_month_offset_{offset}',
-                    python_callable=etl_questions.etl_start,
-                    op_kwargs={
-                        'data_type': 'mdaudit_questions',
-                        'month_offset': offset,
-                    }
-                )
-            )
-
-        tasks.append(
-            PythonOperator(
-                task_id=f'get_shops',
-                python_callable=etl_shops.etl_start,
-                op_kwargs={
-                    'data_type': 'mdaudit_shops',
-                    'periodic_data': False,
-                }
-            )
+        task1 = MDAuditOperator(
+            dwh_connection_id='greenplum',
+            table_name='stage.mdaudit_checklists',
+            source_connection_id='mdaudit',
+            endpoint='/v1/connector/rpc/stt_checklists?last_modified_at=gte.{start_date}&last_modified_at=lt.{end_date}',
         )
-        
 
+        task2 = MDAuditOperator(
+            dwh_connection_id='greenplum',
+            table_name='stage.mdaudit_shops',
+            source_connection_id='mdaudit',
+            endpoint='/v1/orgstruct/shops',
+        )
+
+        [task1, task2]
+        
     with TaskGroup('Формирование_слоя_DDS') as data_to_dds:
 
         dds_regions = PostgresOperator(

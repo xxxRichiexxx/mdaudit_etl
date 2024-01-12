@@ -1,24 +1,21 @@
 ---STAGE---
-DROP TABLE IF EXISTS stage.mdaudit_questions;
-CREATE TABLE stage.mdaudit_questions (
-	"data" json NULL
-	,"period" date NULL
-	,ts timestamp NULL DEFAULT now()
+DROP TABLE IF EXISTS stage.mdaudit_checklists;
+CREATE TABLE stage.mdaudit_checklists(
+    "id" INT
+    ,"last_modified_at" TIMESTAMP
+	,"data" json
+	,ts TIMESTAMP DEFAULT now()
 )
-DISTRIBUTED RANDOMLY
-PARTITION BY RANGE(period) 
-          (
-          PARTITION jan2022 START ('2022-01-01'::date) END ('2023-01-01'::date)
-          ,PARTITION jan2023 START ('2023-01-01'::date) END ('2024-01-01'::date) 
-          ,DEFAULT PARTITION default_part
-          );
+DISTRIBUTED BY(id);
 
 DROP TABLE IF EXISTS stage.mdaudit_shops;
 CREATE TABLE stage.mdaudit_shops(
-	"data" json NULL
-	,ts timestamp NULL DEFAULT now()
+    "id" INT
+    ,"last_modified_at" TIMESTAMP NULL
+	,"data" json
+	,ts TIMESTAMP DEFAULT now()
 )
-DISTRIBUTED RANDOMLY;
+DISTRIBUTED BY(id);
 
 
 -- DDS --
