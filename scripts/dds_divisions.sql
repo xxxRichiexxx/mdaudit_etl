@@ -18,6 +18,6 @@ SELECT DISTINCT
 	,replace((data ->> 'division_name'), '"', '')::varchar(50)			as division_name
 FROM stage.mdaudit_checklists
 WHERE last_modified_at >= '{{execution_date.date() - params.delta}}'
-    AND last_modified_at < '{{next_execution_date.date()}}'
+    AND last_modified_at < '{{next_execution_date.date()}}';
 
 COMMIT TRANSACTION;
