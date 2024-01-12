@@ -2,23 +2,15 @@ BEGIN TRANSACTION;
 
 DELETE FROM dds.quality_of_service_checks
 WHERE id IN 
-	(WITH 
-		data AS
-			(SELECT json_array_elements(data) 							AS data
-			 FROM stage.mdaudit_questions
-			 WHERE period = '{{execution_date.replace(day=1)}}')
+	(
 	SELECT DISTINCT
 		replace(data ->>'id', '"', '')::int 							AS id
-	FROM data);
+	FROM stage.mdaudit_checklists
+    WHERE last_modified_at >= '{{execution_date.date() - params.delta}}'
+        AND last_modified_at < '{{next_execution_date.date()}}'
+	);
 
 INSERT INTO dds.quality_of_service_checks
-	WITH 
-		data AS
-			(SELECT
-				json_array_elements(data) 								AS data
-				,period
-			 FROM stage.mdaudit_questions
-			 WHERE period = '{{execution_date.replace(day=1)}}')
 	SELECT
 		replace(data ->> 'id', '"', '')::INT 							AS id
 		,replace(data ->> 'template_id', '"', '')::INT 					AS question_i
@@ -32,8 +24,9 @@ INSERT INTO dds.quality_of_service_checks
 		,replace(data ->> 'grade', '"', '')::NUMERIC(6,3) 				AS grade
 		,replace(data ->> 'comment', '"', '')::VARCHAR(1000)			AS comment
 		,replace(data ->> 'status', '"', '')::VARCHAR(100)				AS status
-		,period
-	FROM data;
+	FROM stage.mdaudit_checklists
+    WHERE last_modified_at >= '{{execution_date.date() - params.delta}}'
+        AND last_modified_at < '{{next_execution_date.date()}}';
 
 COMMIT TRANSACTION;
 
