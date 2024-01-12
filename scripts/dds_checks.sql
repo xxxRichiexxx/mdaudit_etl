@@ -2,8 +2,7 @@ BEGIN TRANSACTION;
 
 DELETE FROM dds.quality_of_service_checks
 WHERE 
-	id IN (SELECT DISTINCT
-				replace(data ->>'id', '"', '')::int 							AS id
+	id IN (SELECT DISTINCT id
 		   FROM stage.mdaudit_checklists
     	   WHERE last_modified_at >= '{{execution_date.date() - params.delta}}'
         		AND last_modified_at < '{{next_execution_date.date()}}')
