@@ -17,7 +17,7 @@ SELECT DISTINCT
 	,replace((data ->> 'region_name'), '"', '')::varchar(500)   AS region_name
 FROM stage.mdaudit_checklists
 WHERE last_modified_at >= {{execution_date.date() - params.delta}}
-    AND last_modified_at < {{next_execution_date}};
+    AND last_modified_at < {{next_execution_date.date()}};
 
 COMMIT TRANSACTION;
 
