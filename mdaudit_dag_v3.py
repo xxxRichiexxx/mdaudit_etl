@@ -42,7 +42,7 @@ with DAG(
             dwh_connection_id='greenplum',
             table_name='stage.mdaudit_checklists',
             source_connection_id='mdaudit',
-            endpoint='/v1/connector/rpc/stt_checklists?last_modified_at=gte.{start_date}&last_modified_at=lt.{end_date}',
+            endpoint='/connector/rpc/stt_checklists?last_modified_at=gte.{start_date}&last_modified_at=lt.{end_date}',
         )
 
         task2 = MDAuditOperator(
@@ -50,7 +50,7 @@ with DAG(
             dwh_connection_id='greenplum',
             table_name='stage.mdaudit_shops',
             source_connection_id='mdaudit',
-            endpoint='/v1/orgstruct/shops',
+            endpoint='/orgstruct/shops',
         )
 
         [task1, task2]
