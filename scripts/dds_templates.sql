@@ -4,26 +4,22 @@ DELETE FROM dds.quality_of_service_templates
 WHERE id IN 
 	(
         SELECT DISTINCT
-	    replace((json_array_elements(data) ->> 'template_id'), '"', '')::int
-        FROM stage.mdaudit_questions
-        WHERE period = '{{execution_date.replace(day=1)}}'
+	    replace((data ->> 'template_id'), '"', '')::int
+        FROM stage.mdaudit_checklists
+        WHERE last_modified_at >= '{{execution_date.date() - params.delta}}'
+            AND last_modified_at < '{{next_execution_date.date()}}'
     );
 
 INSERT INTO dds.quality_of_service_templates
 (
     id
     ,template_name
-)
-WITH 
-    data AS
-    (
-        SELECT json_array_elements(data) as data
-        FROM stage.mdaudit_questions
-        WHERE period = '{{execution_date.replace(day=1)}}'
-    )         
+) 
 SELECT DISTINCT
 	replace((data ->> 'template_id'), '"', '')::int						as id
 	,replace((data ->> 'template_name'), '"', '')::varchar(500)			as template_name
-FROM data;
+FROM stage.mdaudit_checklists
+WHERE last_modified_at >= '{{execution_date.date() - params.delta}}'
+    AND last_modified_at < '{{next_execution_date.date()}}';
 
 COMMIT TRANSACTION;
