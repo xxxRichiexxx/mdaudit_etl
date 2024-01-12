@@ -38,6 +38,7 @@ with DAG(
     with TaskGroup('Загрузка_данных_в_stage_слой') as data_to_stage:
 
         task1 = MDAuditOperator(
+            task_id = 'checklists',
             dwh_connection_id='greenplum',
             table_name='stage.mdaudit_checklists',
             source_connection_id='mdaudit',
@@ -45,6 +46,7 @@ with DAG(
         )
 
         task2 = MDAuditOperator(
+            task_id = 'shops',
             dwh_connection_id='greenplum',
             table_name='stage.mdaudit_shops',
             source_connection_id='mdaudit',
