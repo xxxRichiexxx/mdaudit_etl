@@ -61,6 +61,9 @@ with DAG(
             task_id='quality_of_service_regions',
             postgres_conn_id='greenplum',
             sql='scripts/dds_regions.sql',
+            params={
+                'delta': dt.timedelta(days=90),
+            }
         )
 
         tables = (

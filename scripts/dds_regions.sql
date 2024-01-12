@@ -1,30 +1,23 @@
 BEGIN TRANSACTION;
 
 DELETE FROM dds.quality_of_service_regions
-WHERE id IN 
-	(
-        SELECT DISTINCT
-	    replace((json_array_elements(data) ->> 'region_id'), '"', '')::int
-        FROM stage.mdaudit_questions
-        WHERE period = '{{execution_date.replace(day=1)}}'
-    );
+WHERE id IN (SELECT DISTINCT
+         	    replace(data ->> 'region_id', '"', '')::int
+             FROM stage.mdaudit_checklists
+             WHERE last_modified_at >= {{execution_date.date() - params.delta}}
+                AND last_modified_at < {{next_execution_date}});
 
 INSERT INTO dds.quality_of_service_regions
 (
     id
     ,region_name
 )
-WITH 
-    data AS
-    (
-        SELECT json_array_elements(data) as data
-        FROM stage.mdaudit_questions
-        WHERE period = '{{execution_date.replace(day=1)}}'
-    )         
 SELECT DISTINCT
 	replace((data ->> 'region_id'), '"', '')::int               AS region_id
 	,replace((data ->> 'region_name'), '"', '')::varchar(500)   AS region_name
-FROM data;
+FROM stage.mdaudit_checklists
+WHERE last_modified_at >= {{execution_date.date() - params.delta}}
+    AND last_modified_at < {{next_execution_date}};
 
 COMMIT TRANSACTION;
 

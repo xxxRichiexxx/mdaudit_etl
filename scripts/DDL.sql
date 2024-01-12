@@ -30,14 +30,14 @@ DROP TABLE IF EXISTS dds.quality_of_service_divisions;
 
 
 CREATE TABLE IF NOT EXISTS dds.quality_of_service_regions(
-    id INT UNIQUE
+    id INT UNIQUE NOT NULL
     ,region_name VARCHAR(500) NOT NULL
 )
 DISTRIBUTED REPLICATED;
 
 
 CREATE TABLE IF NOT EXISTS dds.quality_of_service_shops(
-    id INT UNIQUE
+    id INT UNIQUE NOT NULL
     ,active BOOLEAN
     ,sap VARCHAR(100)
     ,locality VARCHAR(1000)
@@ -51,21 +51,21 @@ DISTRIBUTED REPLICATED;
 
 
 CREATE TABLE IF NOT EXISTS dds.quality_of_service_divisions(
-    id INT UNIQUE
+    id INT UNIQUE NOT NULL
     ,division_name VARCHAR(1000) NOT NULL
 )
 DISTRIBUTED REPLICATED;
 
 
 CREATE TABLE IF NOT EXISTS dds.quality_of_service_templates(
-    id INT UNIQUE
+    id INT UNIQUE NOT NULL
     ,template_name VARCHAR(1000) NOT NULL
 )
 DISTRIBUTED REPLICATED;
 
 
 CREATE TABLE IF NOT EXISTS dds.quality_of_service_resolvers(
-    id INT UNIQUE
+    id INT UNIQUE NOT NULL
     ,resolver_first_name VARCHAR
     ,resolver_last_name VARCHAR
 )
@@ -73,7 +73,7 @@ DISTRIBUTED REPLICATED;
 
 
 CREATE TABLE IF NOT EXISTS dds.quality_of_service_checks(
-    id INT UNIQUE
+    id INT UNIQUE NOT NULL
     ,template_id INT NOT NULL REFERENCES dds.quality_of_service_templates(id)
     ,shop_id INT NOT NULL REFERENCES dds.quality_of_service_shops(id)
     ,division_id INT NOT NULL REFERENCES dds.quality_of_service_divisions(id)
@@ -92,7 +92,7 @@ DISTRIBUTED BY (id);
 
 
 CREATE TABLE IF NOT EXISTS dds.quality_of_service_answers(
-    id INT
+    id INT NOT NULL
     ,check_id INT NOT NULL REFERENCES dds.quality_of_service_checks(id) ON DELETE CASCADE
     ,question_id INT NOT NULL
     ,name VARCHAR(1000) NOT NULL
