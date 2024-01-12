@@ -1,10 +1,10 @@
 BEGIN TRANSACTION;
 
 DELETE FROM dds.quality_of_service_answers
-WHERE id IN 
+WHERE check_id IN 
 	(
 	SELECT DISTINCT
-		replace(json_array_elements(data -> 'answers') ->> 'id', '"', '')::INT 					AS id
+		replace((data ->> 'id'), '"', '')::INT 					AS id
 	FROM stage.mdaudit_checklists
     WHERE last_modified_at >= '{{execution_date.date() - params.delta}}'
         AND last_modified_at < '{{next_execution_date.date()}}'
